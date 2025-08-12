@@ -8,8 +8,8 @@ import { useNavigate } from "react-router-dom";
  */
 function Login({ login }) {
   const [formData, setFormData] = useState({
-    username: "testuser", // dev default
-    password: "password", // dev default
+    username: "", 
+    password: "", 
   });
   const [errors, setErrors] = useState(null);
   const navigate = useNavigate();
