@@ -4,18 +4,23 @@ import JoblyApi from "../api";
 
 function ApplyButton({ jobId }) {
   const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
-  const [hasApplied, setHasApplied] = useState(
-    currentUser.applications?.includes(jobId) || false
-  );
+
+  const hasAppliedInitially = currentUser?.applications?.includes(jobId) || false;
+  const [hasApplied, setHasApplied] = useState(hasAppliedInitially);
   const [loading, setLoading] = useState(false);
 
   async function handleApply(evt) {
     evt.preventDefault();
+
+    if (!currentUser) {
+      alert("Please log in to apply for jobs.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       await JoblyApi.applyToJob(currentUser.username, jobId);
-      // Update context with new application
       setCurrentUser(cu => ({
         ...cu,
         applications: [...(cu.applications || []), jobId],
@@ -31,10 +36,16 @@ function ApplyButton({ jobId }) {
   return (
     <button
       onClick={handleApply}
-      disabled={hasApplied || loading}
+      disabled={!currentUser || hasApplied || loading}
       aria-label={hasApplied ? "Already applied" : "Apply for job"}
     >
-      {hasApplied ? "Applied" : loading ? "Applying..." : "Apply"}
+      {hasApplied
+        ? "Applied"
+        : loading
+        ? "Applying..."
+        : currentUser
+        ? "Apply"
+        : "Login to apply"}
     </button>
   );
 }
